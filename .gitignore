@@ -21,3 +21,4 @@ yarn-error.log*
 
 # config
 node_modules
+.serverless

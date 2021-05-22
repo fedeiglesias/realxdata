@@ -1,0 +1,47 @@
+org: fedeiglesias
+app: realxdata
+service: realxdata
+
+plugins:
+  - serverless-offline
+  - serverless-plugin-scripts
+  - serverless-s3-sync
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  stage: dev
+  lambdaHashingVersion: 20201221
+  apiGateway:
+    shouldStartNameWithService: true
+
+custom:
+  domain:
+    # AWS domain id
+    id: "ZJKMN1QK0FD9S"
+    name: fedeiglesias.com
+    subdomain: rxd.fedeiglesias.com
+    # AWS certificate domain arn
+    certificateArn: arn:aws:acm:us-east-1:989257975727:certificate/735f4bd6-85db-4cd6-89a2-dcec2bec7d49
+
+  # Bucket name
+  s3Bucket: realxdata-bucket-client
+
+  s3Sync:
+    - bucketName: ${self:custom.s3Bucket}
+      localDir: build
+      params:
+        - index.html:
+            CacheControl: "no-store, no-cache"
+        - index.js:
+            CacheControl: "no-store, no-cache"
+  scripts:
+    hooks:
+      # Build Client
+      "before:deploy:deploy": npm run build
+
+resources:
+  - ${file(aws/resources/s3-bucket.yml)}
+  - ${file(aws/resources/s3-policies.yml)}
+  - ${file(aws/resources/cf-distribution.yml)}
+  - ${file(aws/resources/dns-records.yml)}
