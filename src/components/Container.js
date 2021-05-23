@@ -3,10 +3,10 @@ import { PhotoContext } from "../context/PhotoContext";
 import Gallery from "./Gallery";
 import Loader from "./Loader";
 
-const Container = ({ searchTerm }) => {
+const Container = ({ searchTerm, clearSearchEntry = false }) => {
   const { images, loading, runSearch } = useContext(PhotoContext);
   useEffect(() => {
-    runSearch(searchTerm);
+    runSearch(searchTerm, clearSearchEntry);
     // eslint-disable-next-line
   }, [searchTerm]);
 
