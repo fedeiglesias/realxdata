@@ -1,9 +1,10 @@
-import React, { createContext, useState } from "react";
+import React, { createContext, useState, useRef } from "react";
 import axios from "axios";
 import { apiKey } from "../api/config";
 export const PhotoContext = createContext();
 
 const PhotoContextProvider = (props) => {
+  const cache = useRef({});
   const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchEntry, setSearchEntry] = useState("");
@@ -11,11 +12,25 @@ const PhotoContextProvider = (props) => {
   const runSearch = (query, clearSearchEntry) => {
     if (clearSearchEntry) setSearchEntry("");
 
+    const sanatizedQuery = query
+      .toLowerCase()
+      .trim()
+      .replace(/ +(?= )/g, "");
+
+    const endpoint = `https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=${apiKey}&tags=${sanatizedQuery}&per_page=24&format=json&nojsoncallback=1`;
+
+    console.log(cache.current);
+
+    if (cache.current[endpoint]) {
+      setImages(cache.current[endpoint]);
+      setLoading(false);
+      return;
+    }
+
     axios
-      .get(
-        `https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=${apiKey}&tags=${query}&per_page=24&format=json&nojsoncallback=1`
-      )
+      .get(endpoint)
       .then((response) => {
+        cache.current[endpoint] = response.data.photos.photo;
         setImages(response.data.photos.photo);
         setLoading(false);
       })
@@ -26,6 +41,7 @@ const PhotoContextProvider = (props) => {
         );
       });
   };
+
   return (
     <PhotoContext.Provider
       value={{ images, loading, runSearch, searchEntry, setSearchEntry }}
