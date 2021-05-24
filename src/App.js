@@ -11,7 +11,7 @@ class App extends Component {
   handleSubmit = (e, history, searchInput) => {
     e.preventDefault();
     e.currentTarget.reset();
-    let url = `/search/${searchInput}`;
+    let url = `/${searchInput}`;
     history.push(url);
   };
 
@@ -43,7 +43,7 @@ class App extends Component {
               <Route path="/bird" render={() => <Item searchTerm="bird" />} />
               <Route path="/food" render={() => <Item searchTerm="food" />} />
               <Route
-                path="/search/:searchInput"
+                path="/:searchInput"
                 render={(props) => (
                   <Search searchTerm={props.match.params.searchInput} />
                 )}
