@@ -4,9 +4,11 @@ import Gallery from "./Gallery";
 import Loader from "./Loader";
 
 const Container = ({ searchTerm, clearSearchEntry = false }) => {
-  const { images, loading, runSearch } = useContext(PhotoContext);
+  const { images, loading, setQuery, setSearchEntry } =
+    useContext(PhotoContext);
   useEffect(() => {
-    runSearch(searchTerm, clearSearchEntry);
+    setQuery(searchTerm);
+    if (clearSearchEntry) setSearchEntry("");
     // eslint-disable-next-line
   }, [searchTerm]);
 
