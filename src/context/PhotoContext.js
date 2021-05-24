@@ -12,6 +12,7 @@ const PhotoContextProvider = (props) => {
   const [loading, setLoading] = useState(true);
   const [query, setQuery] = useState("");
   const [zoom, setZoom] = useState(10);
+  const [selectedImage, setSelectedImage] = useState({});
   const [coordinates, setCoordinates] = useState({
     lat: 41.390205,
     lng: 2.154007,
@@ -48,6 +49,8 @@ const PhotoContextProvider = (props) => {
 
     if (cache.current[endpoint]) {
       setImages(cache.current[endpoint]);
+      if (!cache.current[endpoint].find((img) => img.id === selectedImage?.id))
+        setSelectedImage(cache.current[endpoint][0]);
       setLoading(false);
       return;
     }
@@ -57,6 +60,10 @@ const PhotoContextProvider = (props) => {
       .then((response) => {
         cache.current[endpoint] = response.data.photos.photo;
         setImages(response.data.photos.photo);
+        if (
+          !cache.current[endpoint].find((img) => img.id === selectedImage?.id)
+        )
+          setSelectedImage(cache.current[endpoint][0]);
         setLoading(false);
       })
       .catch((error) => {
@@ -65,6 +72,7 @@ const PhotoContextProvider = (props) => {
           error
         );
       });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [query, coordinates, zoom]);
 
   return (
@@ -72,6 +80,8 @@ const PhotoContextProvider = (props) => {
       value={{
         images,
         loading,
+        selectedImage,
+        setSelectedImage,
         setQuery,
         searchEntry,
         setSearchEntry,

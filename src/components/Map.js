@@ -5,8 +5,24 @@ import { PhotoContext } from "../context/PhotoContext";
 
 const Map = () => {
   const mapRef = useRef(null);
-  const { images, coordinates, setCoordinates, zoom, setZoom } =
-    useContext(PhotoContext);
+  const {
+    images,
+    coordinates,
+    setCoordinates,
+    zoom,
+    setZoom,
+    selectedImage,
+    setSelectedImage,
+  } = useContext(PhotoContext);
+
+  const unselectedMarker = {
+    path: "M-20,0a20,20 0 1,0 40,0a20,20 0 1,0 -40,0",
+    fillColor: "#ea4336",
+    fillOpacity: 1,
+    strokeColor: "#ffffff",
+    strokeWeight: 0.8,
+    scale: 0.25,
+  };
 
   const options = {
     fullscreenControl: false,
@@ -45,6 +61,8 @@ const Map = () => {
           images.map((image) => (
             <Marker
               key={image.id}
+              onClick={() => setSelectedImage(image)}
+              icon={image.id === selectedImage?.id ? null : unselectedMarker}
               position={{
                 lat: Number(image.latitude),
                 lng: Number(image.longitude),
